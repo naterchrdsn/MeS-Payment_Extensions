@@ -1,0 +1,358 @@
+<?php
+
+/**
+ * Merchant e-Solutions Payment Module Language definitions
+ *
+ * @copyright Copyright 2008 Merchant e-Solutions
+ * @copyright Portions Copyright 2003 osCommerce
+ */
+
+
+  class mes {
+    var $code, $title, $description, $enabled;
+
+    function mes() {
+      global $order;
+
+      $this->signature = 'mes|mes|1.0|1.2';
+
+      $this->Gresponse = array();
+      $this->code = 'mes';
+      $this->title = MODULE_PAYMENT_MES_TEXT_TITLE;
+      $this->public_title = MODULE_PAYMENT_MES_TEXT_PUBLIC_TITLE;
+      $this->description = MODULE_PAYMENT_MES_TEXT_DESCRIPTION;
+      $this->sort_order = MODULE_PAYMENT_MES_SORT_ORDER;
+      $this->enabled = ((MODULE_PAYMENT_MES_STATUS == 'True') ? true : false);
+
+      if ((int)MODULE_PAYMENT_MES_ORDER_STATUS_ID > 0) {
+        $this->order_status = MODULE_PAYMENT_MES_ORDER_STATUS_ID;
+      }
+
+      if (is_object($order)) $this->update_status();
+    }
+
+// class methods
+    function update_status() {
+      global $order;
+
+      if ( ($this->enabled == true) && ((int)MODULE_PAYMENT_MES_ZONE > 0) ) {
+        $check_flag = false;
+        $check_query = tep_db_query("select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . " where geo_zone_id = '" . MODULE_PAYMENT_MES_ZONE . "' and zone_country_id = '" . $order->billing['country']['id'] . "' order by zone_id");
+        while ($check = tep_db_fetch_array($check_query)) {
+          if ($check['zone_id'] < 1) {
+            $check_flag = true;
+            break;
+          } elseif ($check['zone_id'] == $order->billing['zone_id']) {
+            $check_flag = true;
+            break;
+          }
+        }
+
+        if ($check_flag == false) {
+          $this->enabled = false;
+        }
+      }
+    }
+
+    function javascript_validation() {
+      return false;
+    }
+
+    function selection() {
+      return array('id' => $this->code,
+                   'module' => $this->public_title);
+    }
+
+    function pre_confirmation_check() {
+      return false;
+    }
+
+    function confirmation() {
+      global $order;
+
+      for ($i=1; $i<13; $i++) {
+        $expires_month[] = array('id' => sprintf('%02d', $i), 'text' => strftime('%B',mktime(0,0,0,$i,1,2000)));
+      }
+
+      $today = getdate(); 
+      for ($i=$today['year']; $i < $today['year']+10; $i++) {
+        $expires_year[] = array('id' => strftime('%y',mktime(0,0,0,1,1,$i)), 'text' => strftime('%Y',mktime(0,0,0,1,1,$i)));
+      }
+
+      $confirmation = array('fields' => array(array('title' => MODULE_PAYMENT_MES_CREDIT_CARD_OWNER,
+                                                    'field' => tep_draw_input_field('cc_owner', $order->billing['firstname'] . ' ' . $order->billing['lastname'])),
+                                              array('title' => MODULE_PAYMENT_MES_CREDIT_CARD_NUMBER,
+                                                    'field' => tep_draw_input_field('cc_number_nh-dns')),
+                                              array('title' => MODULE_PAYMENT_MES_CREDIT_CARD_EXPIRES,
+                                                    'field' => tep_draw_pull_down_menu('cc_expires_month', $expires_month) . '&nbsp;' . tep_draw_pull_down_menu('cc_expires_year', $expires_year)),
+                                              array('title' => MODULE_PAYMENT_MES_CREDIT_CARD_CVC,
+                                                    'field' => tep_draw_input_field('cc_cvc_nh-dns', '', 'size="5" maxlength="4"'))));
+
+      return $confirmation;
+    }
+
+    function process_button() {
+      return false;
+    }
+
+    function before_process() {
+      global $HTTP_POST_VARS, $customer_id, $order, $sendto, $currency, $insert_id;
+
+      $params = array('profile_id' => substr(MODULE_PAYMENT_MES_LOGIN_ID, 0, 20),
+                      'profile_key' => substr(MODULE_PAYMENT_MES_TRANSACTION_KEY, 0, 32),
+                      'cardholder_street_address' => substr($order->billing['street_address'], 0, 60),
+                      'cardholder_zip' => substr($order->billing['postcode'], 0, 20),
+                      'invoice_number' => substr($order->customer['firstname'] . " " . $order->customer['lastname'], 0, 17),
+                      'client_reference_number' => substr($order->customer['email_address'], 0, 255) . " - " . tep_get_ip_address(),
+                      'transaction_amount' => substr($this->format_raw($order->info['total']), 0, 15),
+                      'currency_code' => 840,
+                      'transaction_type' => ((MODULE_PAYMENT_MES_TRANSACTION_METHOD == 'Sale') ? 'D' : 'P'),
+                      'card_number' => substr($HTTP_POST_VARS['cc_number_nh-dns'], 0, 22),
+                      'card_exp_date' => $HTTP_POST_VARS['cc_expires_month'] . $HTTP_POST_VARS['cc_expires_year'],
+                      'cvv2' => substr($HTTP_POST_VARS['cc_cvc_nh-dns'], 0, 4));
+
+
+
+      $tax_value = 0;
+
+      foreach ($order->info['tax_groups'] as $key => $value) {
+        if ($value > 0) {
+          $tax_value += $this->format_raw($value);
+        }
+      }
+
+      if ($tax_value > 0) {
+        $params['tax_amount'] = $this->format_raw($tax_value);
+      }
+
+      $post_string = '';
+
+      foreach ($params as $key => $value) {
+        $post_string .= $key . '=' . urlencode(trim($value)) . '&';
+      }
+
+      $post_string = substr($post_string, 0, -1);
+
+      switch (MODULE_PAYMENT_MES_TRANSACTION_SERVER) {
+        case 'Live':
+          $gateway_url = 'https://api.merchante-solutions.com/mes-api/tridentApi';
+          break;
+
+        default:
+          $gateway_url = 'https://cert.merchante-solutions.com/mes-api/tridentApi';
+          break;
+      }
+
+      $transaction_response = $this->sendTransactionToGateway($gateway_url, $post_string);
+
+
+      $rFields = explode("&",$transaction_response); 
+      $responseFields = array();
+
+      foreach($rFields as $field) 
+      { 
+        $nameValue = explode("=",$field); 
+        $responseFields[$nameValue[0]] = $nameValue[1]; 
+      } 
+      $this->Gresponse = $responseFields;
+
+      if ($responseFields['error_code'] != "000")
+      {
+        tep_redirect(tep_href_link(FILENAME_CHECKOUT_PAYMENT, 'error=' . $responseFields['error_code'] . '&payment_error=mes', 'SSL'));
+      }
+
+    }
+
+    function after_process() {
+      global $order, $insert_id;
+      $comment =  "Credit Card " . MODULE_PAYMENT_MES_TRANSACTION_METHOD . ".\n";
+      $comment .= "  Transaction ID: " . $this->Gresponse['transaction_id'] . "\n";
+      $comment .= "  OrderID: " . $insert_id . "\n";
+      $comment .= "\nMeS Gateway Response\n";
+      $comment .= "  AVS Response: " . $this->Gresponse['avs_result'] . "\n";
+      $comment .= "  CVV Response: " . $this->Gresponse['cvv2_result'] . "\n";
+      $comment .= "  Auth Code: " . $this->Gresponse['auth_code'] . "\n";
+      $comment .= "  Error Code: " . $this->Gresponse['error_code'] . "\n";
+      $comment .= "  Gateway Plain Text Response: " . $this->Gresponse['auth_response_text'] . "\n";
+
+      $sql_data_array = array('orders_id' => (int)$insert_id, 
+                              'orders_status_id' => (int)$order->info['order_status'], 
+                              'date_added' => 'now()', 
+                              'customer_notified' => '0',
+                              'comments' => $comment);
+
+      tep_db_perform(TABLE_ORDERS_STATUS_HISTORY, $sql_data_array);
+    }
+
+    function do_tid_tran($transaction_id, $orderid, $amount, $tran_type) {
+
+      $params = array('profile_id' => substr(MODULE_PAYMENT_MES_LOGIN_ID, 0, 20),
+                      'profile_key' => substr(MODULE_PAYMENT_MES_TRANSACTION_KEY, 0, 32),
+                      'invoice_number' => "Order " . $orderid,
+                      'transaction_id' => $transaction_id,
+                      'transaction_amount' => $amount,
+                      'transaction_type' => $tran_type);
+
+      $post_string = '';
+
+      foreach ($params as $key => $value) {
+        $post_string .= $key . '=' . urlencode(trim($value)) . '&';
+      }
+
+      $post_string = substr($post_string, 0, -1);
+
+      switch (MODULE_PAYMENT_MES_TRANSACTION_SERVER) {
+        case 'Live':
+          $gateway_url = 'https://api.merchante-solutions.com/mes-api/tridentApi';
+          break;
+
+        default:
+          $gateway_url = 'https://cert.merchante-solutions.com/mes-api/tridentApi';
+          break;
+      }
+
+      $transaction_response = $this->sendTransactionToGateway($gateway_url, $post_string);
+
+
+      $rFields = explode("&",$transaction_response); 
+      $responseFields = array();
+
+      foreach($rFields as $field) 
+      { 
+        $nameValue = explode("=",$field); 
+        $responseFields[$nameValue[0]] = $nameValue[1]; 
+      } 
+      $this->Gresponse = $responseFields;
+
+      $type = "";
+      switch($tran_type){
+        case "U": $type = "Refund"; break;
+        case "S": $type = "Settlement"; break;
+        case "V": $type = "Void"; break;
+      }
+
+      $comment =  "Credit Card " . $type . ".\n";
+      $comment .= "  Transaction ID: " . $this->Gresponse['transaction_id'] . "\n";
+      $comment .= "  OrderID: " . $orderid . "\n";
+      $comment .= "\nMeS Gateway Response\n";
+      $comment .= "  Error Code: " . $this->Gresponse['error_code'] . "\n";
+      $comment .= "  Gateway Plain Text Response: " . $this->Gresponse['auth_response_text'] . "\n";
+
+      $sql_data_array = array('orders_id' => $orderid, 
+                              'orders_status_id' => 2, 
+                              'date_added' => 'now()', 
+                              'customer_notified' => '0',
+                              'comments' => $comment);
+
+      tep_db_perform(TABLE_ORDERS_STATUS_HISTORY, $sql_data_array);
+    }
+
+    function get_error() {
+      global $HTTP_GET_VARS;
+
+      $error_message = MODULE_PAYMENT_MES_ERROR_GENERAL;
+      $title = MODULE_PAYMENT_MES_ERROR_TITLE;
+      $error = $HTTP_GET_VARS['error'];
+
+      if( $error == "0N7")
+        $error_message = MODULE_PAYMENT_MES_ERROR_CVV;
+      else if( $error == "210" )
+        $error_message = MODULE_PAYMENT_MES_ERROR_AVS_FILTER;
+      else if( $error == "054" )
+        $error_message = MODULE_PAYMENT_MES_ERROR_EXPIRED;
+      else if( $error == "115" )
+        $error_message = MODULE_PAYMENT_MES_ERROR_CARD_ERROR;
+      else if( $error == "117" )
+        $error_message = MODULE_PAYMENT_MES_ERROR_NOT_ACCEPTED;
+      else if( (int)$error < 101 )
+        $error_message = MODULE_PAYMENT_MES_ERROR_DECLINED;
+      else
+        $error_message = MODULE_PAYMENT_MES_ERROR_GENERAL;      
+
+
+      $error = array('title' => $title,
+                     'error' => $error_message);
+      return $error;
+    }
+
+    function check() {
+      if (!isset($this->_check)) {
+        $check_query = tep_db_query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_MES_STATUS'");
+        $this->_check = tep_db_num_rows($check_query);
+      }
+      return $this->_check;
+    }
+
+    function install() {
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Enable Merchant e-Solutions Credit Card Module', 'MODULE_PAYMENT_MES_STATUS', 'False', 'Do you want to accept payments through Merchant e-Solutions?', '6', '0', 'tep_cfg_select_option(array(\'True\', \'False\'), ', now())");
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Profile ID', 'MODULE_PAYMENT_MES_LOGIN_ID', '', 'The Profile ID used for MeS', '6', '0', now())");
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Profile Key', 'MODULE_PAYMENT_MES_TRANSACTION_KEY', '', 'Merchant profile key', '6', '0', now())");
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Transaction Simulator', 'MODULE_PAYMENT_MES_TRANSACTION_SERVER', 'Live', 'Perform live sales or use the transaction simulator.', '6', '0', 'tep_cfg_select_option(array(\'Live\', \'Simulated\'), ', now())");
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Transaction Type', 'MODULE_PAYMENT_MES_TRANSACTION_METHOD', 'Pre Authorization', 'The processing method to use for each transaction.', '6', '0', 'tep_cfg_select_option(array(\'Pre Authorization\', \'Sale\'), ', now())");
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Sort order of display.', 'MODULE_PAYMENT_MES_SORT_ORDER', '0', 'Sort order of display. Lowest is displayed first.', '6', '0', now())");
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added) values ('Payment Zone', 'MODULE_PAYMENT_MES_ZONE', '0', 'If a zone is selected, only enable this payment method for that zone.', '6', '2', 'tep_get_zone_class_title', 'tep_cfg_pull_down_zone_classes(', now())");
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, use_function, date_added) values ('Set Order Status', 'MODULE_PAYMENT_MES_ORDER_STATUS_ID', '0', 'Set the status of orders made with this payment module to this value', '6', '0', 'tep_cfg_pull_down_order_statuses(', 'tep_get_order_status_name', now())");
+      tep_db_query("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('cURL Program Location', 'MODULE_PAYMENT_MES_CURL', '/usr/bin/curl', 'The location to the cURL program application.', '6', '0' , now())");
+    }
+
+    function remove() {
+      tep_db_query("delete from " . TABLE_CONFIGURATION . " where configuration_key in ('" . implode("', '", $this->keys()) . "')");
+    }
+
+    function keys() {
+      return array('MODULE_PAYMENT_MES_STATUS', 'MODULE_PAYMENT_MES_LOGIN_ID', 'MODULE_PAYMENT_MES_TRANSACTION_KEY', 'MODULE_PAYMENT_MES_TRANSACTION_SERVER', 'MODULE_PAYMENT_MES_TRANSACTION_METHOD', 'MODULE_PAYMENT_MES_ZONE', 'MODULE_PAYMENT_MES_ORDER_STATUS_ID', 'MODULE_PAYMENT_MES_SORT_ORDER', 'MODULE_PAYMENT_MES_CURL');
+    }
+
+    function sendTransactionToGateway($url, $parameters) {
+      $server = parse_url($url);
+
+      if (isset($server['port']) === false) {
+        $server['port'] = ($server['scheme'] == 'https') ? 443 : 80;
+      }
+
+      if (isset($server['path']) === false) {
+        $server['path'] = '/';
+      }
+
+      if (isset($server['user']) && isset($server['pass'])) {
+        $header[] = 'Authorization: Basic ' . base64_encode($server['user'] . ':' . $server['pass']);
+      }
+
+      if (function_exists('curl_init')) {
+        $curl = curl_init($server['scheme'] . '://' . $server['host'] . $server['path'] . (isset($server['query']) ? '?' . $server['query'] : ''));
+        curl_setopt($curl, CURLOPT_PORT, $server['port']);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_FORBID_REUSE, 1);
+        curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
+
+        $result = curl_exec($curl);
+
+        curl_close($curl);
+      } else {
+        exec(escapeshellarg(MODULE_PAYMENT_MES_CURL) . ' -d ' . escapeshellarg($parameters) . ' "' . $server['scheme'] . '://' . $server['host'] . $server['path'] . (isset($server['query']) ? '?' . $server['query'] : '') . '" -P ' . $server['port'] . ' -k', $result);
+        $result = implode("\n", $result);
+      }
+
+      return $result;
+    }
+
+// format prices without currency formatting
+    function format_raw($number, $currency_code = '', $currency_value = '') {
+      global $currencies, $currency;
+
+      if (empty($currency_code) || !$this->is_set($currency_code)) {
+        $currency_code = $currency;
+      }
+
+      if (empty($currency_value) || !is_numeric($currency_value)) {
+        $currency_value = $currencies->currencies[$currency_code]['value'];
+      }
+
+      return number_format(tep_round($number * $currency_value, $currencies->currencies[$currency_code]['decimal_places']), $currencies->currencies[$currency_code]['decimal_places'], '.', '');
+    }
+  }
+?>
