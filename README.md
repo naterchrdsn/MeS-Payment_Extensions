@@ -12,10 +12,12 @@ Here is how the repository is organized:
 CMS Name -> Plugin Name(if applicable) -> API Type -> Version
 
 example:
+'''
 WordPress
      -> WP e-Commerce
                -> Credit Card -> v3.8.8
                -> eCheck Direct -> v3.8.8
+'''
 ----
 
 ### Contributing
