@@ -22,13 +22,13 @@ WordPress
 
 ### Supported Shopping Carts/Content Management Systems
 
-OpenCart
-  *payment types supported:* Credit Cards, ACH
-CubeCart
-PrestaShop
-Ubercart
-osCommerce
-Zen Cart
+* OpenCart
+    - *payment types supported:* Credit Cards, ACH
+* CubeCart
+* PrestaShop
+* Ubercart
+* osCommerce
+* Zen Cart
 
 ----
 
