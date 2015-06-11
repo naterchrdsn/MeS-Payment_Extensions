@@ -1,12 +1,12 @@
 # Master Payment Extensions Repository 
-## Merchant e-Solutions 2014
+## [Merchant e-Solutions](http://merchante-solutions.com)
 ## Admin: @naterchrdsn
 
 ----
 
 ### Info
 
-This repository is the home of all of MeS' payment extensions for popular content management systems.
+This repository is the home of all of Merchant e-Solutions' payment extensions for popular content management systems.
 
 Here is how the repository is organized:
 CMS Name -> Plugin Name(if applicable) -> API Type -> Version
@@ -20,11 +20,20 @@ WordPress
 '''
 ----
 
+### Supported Shopping Carts/Content Management Systems
+
+OpenCart
+  *payment types supported:* Credit Cards, ACH
+CubeCart
+PrestaShop
+Ubercart
+osCommerce
+Zen Cart
+
+----
+
 ### Contributing
 
 1. Ensure you have a BitBucket account.
 2. Commit your changes to the right CMS, plugin, API Type, and version folders
-
-There is no need for branches, however, if you are making significant changes to the plugins look or logic: please make a branch and send a pull request.
-
-It's that simple!
+3. Send a pull request!
