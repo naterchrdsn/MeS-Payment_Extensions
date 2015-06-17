@@ -12,18 +12,18 @@ Here is how the repository is organized:
 CMS Name -> Plugin Name(if applicable) -> API Type -> Version
 
 example:
+
 '''
 WordPress
      -> WP e-Commerce
-               -> Credit Card -> v3.8.8
-               -> eCheck Direct -> v3.8.8
+               -> Credit Cards - PG -> v3.8.8
+               -> eCheck Direct - PG -> v3.8.8
 '''
 ----
 
 ### Supported Shopping Carts/Content Management Systems
 
 * OpenCart
-    - *payment types supported:* Credit Cards, ACH
 * CubeCart
 * PrestaShop
 * Ubercart
