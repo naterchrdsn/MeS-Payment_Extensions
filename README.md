@@ -9,21 +9,22 @@
 This repository is the home of all of Merchant e-Solutions' payment extensions for popular content management systems.
 
 Here is how the repository is organized:
-CMS Name -> Plugin Name(if applicable) -> API Type -> Version
+Shopping Cart Name (CMS Name) / Payment Type -> Shopping Cart Version
 
 example:
 
 '''
 WordPress
-     -> WP e-Commerce
-               -> Credit Cards - PG -> v3.8.8
-               -> eCheck Direct - PG -> v3.8.8
+     -> WooCommerce
+               -> Credit Cards - PG -> v2.3.11
+               -> eCheck Direct - PG -> v2.3.11
 '''
 ----
 
 ### Supported Shopping Carts/Content Management Systems
 
 * OpenCart
+* WordPress
 * CubeCart
 * PrestaShop
 * Ubercart
