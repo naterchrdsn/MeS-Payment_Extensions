@@ -13,12 +13,15 @@ Shopping Cart Name (CMS Name) / Payment Type -> Shopping Cart Version
 
 example:
 
-'''
+```
 WordPress
      -> WooCommerce
-               -> Credit Cards - PG -> v2.3.11
-               -> eCheck Direct - PG -> v2.3.11
-'''
+               -> Credit Cards -> v2.3.11
+               -> eCheck Direct -> v2.3.11
+```
+
+If you would prefer to just download the latest version of the extension you need, please visit the downloads page: https://bitbucket.org/merchantesolutions/payment-extensions/downloads
+
 ----
 
 ### Supported Shopping Carts/Content Management Systems
