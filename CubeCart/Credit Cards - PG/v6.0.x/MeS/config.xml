@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--/*
+ * CubeCart Payment Module for MeS Payment Gateway Credit Card Transactions
+ * Copyright (c) 2015 Merchant e-Solutions
+ * All rights reserved.
+ * Author: Nate Richardson <nrichardson@merchante-solutions.com>
+ */-->
+<installer version="1.0">
+  <info>
+	<uid>nrichardson@merchante-solutions.com</uid>
+	<type>gateway</type>
+	<mobile_optimized>true</mobile_optimized>
+	<name><![CDATA[Merchant e-Solutions - CC]]></name>
+	<description><![CDATA[Merchant e-Solutions Payment Gateway for Credit Card Transactions]]></description>
+	<version>1.0</version>
+	<minVersion>5.0.0</minVersion>
+	<maxVersion>6.*.*</maxVersion>
+	<creator><![CDATA[Merchant e-Solutions]]></creator>
+	<homepage><![CDATA[http://www.merchante-solutions.com]]></homepage>
+	<block>false</block>
+  </info>
+</installer>

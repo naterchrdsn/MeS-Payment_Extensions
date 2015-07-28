@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--/*
+ * CubeCart Payment Module for MeS Payment Gateway Credit Card Transactions
+ * Copyright (c) 2015 Merchant e-Solutions
+ * All rights reserved.
+ * Author: Nate Richardson <nrichardson@merchante-solutions.com>
+ */-->
+<definitions version="1.0">
+ <group name="mes">
+  <string name="payment_mode"><![CDATA[Payment Mode]]></string>
+  <string name="transaction_type"><![CDATA[Transaction Type]]></string>
+  <string name="test_mode"><![CDATA[Test Mode]]></string>
+  <string name="module_description"><![CDATA[Thank you for choosing the Merchant e-Solutions module for Credit Card transactions! This payment gateway module allows payment via either the PayHere or Payment Gateway APIs provided by Merchant e-Solutions.<p><a href="https://www.merchante-solutions.com">Learn More</a>]]></string>
+  <string name="module_title"><![CDATA[Merchant e-Solutions]]></string>
+  <string name="payhere_settings"><![CDATA[PayHere Settings]]></string>
+  <string name="profile_id"><![CDATA[Profile Id]]></string>
+  <string name="profile_key"><![CDATA[Profile Key]]></string>
+  <string name="security_key"><![CDATA[Security Key]]></string>
+  <string name="txn_authorize"><![CDATA[Pre-Authorization]]></string>
+  <string name="txn_sale"><![CDATA[Sale]]></string>
+  <string name="ph"><![CDATA[PayHere]]></string>
+  <string name="pg"><![CDATA[Payment Gateway]]></string>
+ </group>
+</definitions>
