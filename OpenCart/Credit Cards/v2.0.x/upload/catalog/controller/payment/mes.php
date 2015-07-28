@@ -188,7 +188,10 @@ class ControllerPaymentMes extends Controller {
 
 
 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-		$tran_key = md5($this->config->get('mes_profile_key').$this->config->get('mes_security_key').$this->currency->format($order_info['total'], $order_info['currency_code'], 1.00000, FALSE));
+		if(isset($this->config->get('mes_security_key'))) {
+			$tran_key = md5($this->config->get('mes_profile_key').$this->config->get('mes_security_key').$this->currency->format($order_info['total'], $order_info['currency_code'], 1.00000, FALSE));
+			$data['transaction_key'] = $tran_key;
+		}
 		if (!$this->config->get('mes_test')) {
 			$hc_endpoint = 'https://www.merchante-solutions.com/jsp/tpg/secure_checkout.jsp';
 		} else {
@@ -199,7 +202,6 @@ class ControllerPaymentMes extends Controller {
 		$data['invoice_number'] = $order_info['order_id'];
 		$data['transaction_amount'] = $this->currency->format($order_info['total'], $order_info['currency_code'], 1.00000, FALSE);
 		$data['use_merch_receipt'] = 'Y';
-		$data['transaction_key'] = $tran_key;
 		$data['cardholder_street_address'] = html_entity_decode($order_info['payment_address_1'], ENT_QUOTES, 'UTF-8');
 		$data['cardholder_zip'] = html_entity_decode($order_info['payment_postcode'], ENT_QUOTES, 'UTF-8');
 		$data['return_url'] = $this->url->link('payment/mes/checkoutsuccess');

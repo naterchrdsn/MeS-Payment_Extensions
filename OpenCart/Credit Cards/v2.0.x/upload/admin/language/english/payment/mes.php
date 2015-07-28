@@ -27,7 +27,6 @@ $_['text_ph']			  = 'PayHere';
 $_['entry_status']        = 'Status';
 $_['entry_profile_id']    = 'MeS Profile ID';
 $_['entry_profile_key']   = 'MeS Profile Key';
-$_['entry_merch_email']   = 'Merchant E-Mail';
 $_['entry_test']          = 'Test Mode';
 $_['entry_auth']          = 'Transaction Type';
 $_['entry_completed_status']        = 'Completed Status';
@@ -43,7 +42,6 @@ $_['tab_general']         = 'General';
 $_['help_profile']		  = 'Get your API keys from your MeS account details page.';
 $_['help_test']           = 'Use the live or testing (sandbox) gateway server to process transactions?';
 $_['help_auth']           = 'Use the live gateway server to process Pre-Authorizations or Sales Transactions?';
-$_['help_email']		  = 'This is the primary email on your merchant account with Merchant e-Solutions.';
 $_['help_mode']			  = 'Choose Payment Gateway to use the MeS Payment Gateway API via a regular credit card form displayed to your customers.<br />Choose PayHere to use the MeS PayHere API and redirect the customer to the MeS PayHere hosted page.<br />Note: You must have either Payment Gateway or PayHere API access on your account!';
 $_['help_key']			  = 'Your Security Key is a unique PIN you set up when enrolling your merchant account in PayHere. Consult your account rep for this info.';
 
@@ -51,6 +49,4 @@ $_['help_key']			  = 'Your Security Key is a unique PIN you set up when enrollin
 $_['error_permission']    = 'Warning: You do not have permission to modify payment MeS!';
 $_['error_profile_id']    = 'MeS Profile ID is Required!'; 
 $_['error_profile_key']   = 'MeS Profile Key is Required!';
-$_['error_merch_email']   = 'Please enter your email';
-$_['error_security_key']  = 'MeS Security Key is Required!';
 ?>

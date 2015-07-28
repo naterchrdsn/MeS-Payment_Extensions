@@ -43,7 +43,6 @@ class ControllerPaymentMes extends Controller {
 		
 		$data['entry_profile_id'] = $this->language->get('entry_profile_id');
 		$data['entry_profile_key'] = $this->language->get('entry_profile_key');
-		$data['entry_merch_email'] = $this->language->get('entry_merch_email');
 		$data['entry_test'] = $this->language->get('entry_test');
 		$data['entry_auth'] = $this->language->get('entry_auth');
 		$data['entry_transaction'] = $this->language->get('entry_transaction');
@@ -57,7 +56,6 @@ class ControllerPaymentMes extends Controller {
 		$data['help_test'] = $this->language->get('help_test');
 		$data['help_auth'] = $this->language->get('help_auth');
 		$data['help_profile'] = $this->language->get('help_profile');
-		$data['help_email'] = $this->language->get('help_email');
 		$data['help_mode'] = $this->language->get('help_mode');
 		$data['help_key'] = $this->language->get('help_key');
 		
@@ -82,18 +80,6 @@ class ControllerPaymentMes extends Controller {
 			$data['error_profile_key'] = $this->error['profile_key'];
 		} else {
 			$data['error_profile_key'] = '';
-		}
-
-		if (isset($this->error['merch_email'])) {
-			$data['error_merch_email'] = $this->error['merch_email'];
-		} else {
-			$data['error_merch_email'] = '';
-		}
-
-		if (isset($this->error['security_key'])) {
-			$data['error_security_key'] = $this->error['security_key'];
-		} else {
-			$data['error_security_key'] = '';
 		}
 
 		$data['breadcrumbs'] = array();
@@ -148,12 +134,6 @@ class ControllerPaymentMes extends Controller {
 			$data['mes_completed_status_id'] = $this->request->post['mes_completed_status_id'];
 		} else {
 			$data['mes_completed_status_id'] = $this->config->get('mes_completed_status_id');
-		}
-
-		if (isset($this->request->post['mes_merch_email'])) {
-			$data['mes_merch_email'] = $this->request->post['mes_merch_email'];
-		} else {
-			$data['mes_merch_email'] = $this->config->get('mes_merch_email');
 		}
 
 		if (isset($this->request->post['mes_security_key'])) {
@@ -213,14 +193,6 @@ class ControllerPaymentMes extends Controller {
 
 		if (!$this->request->post['mes_profile_key']) {
 			$this->error['profile_key'] = $this->language->get('error_profile_key');
-		}
-
-		if (!$this->request->post['mes_merch_email'] && ($this->request->post['mes_mode'] === 'ph')) {
-			$this->error['merch_email'] = $this->language->get('error_merch_email');
-		}
-	
-		if (!$this->request->post['mes_security_key'] && ($this->request->post['mes_mode'] === 'ph')) {
-			$this->error['security_key'] = $this->language->get('error_security_key');
 		}
 
 		if (!$this->error) {

@@ -141,16 +141,7 @@
                 </div>
               </div>
               <?php } else { ?>
-              <div class="form-group required">
-                <label class="col-sm-2 control-label" for="mes_merch_email"><span data-toggle="tooltip" title="<?php echo $help_email; ?>"><?php echo $entry_merch_email; ?></span></label>
-                <div class="col-sm-10">
-                  <input type="text" name="mes_merch_email" value="<?php echo $mes_merch_email; ?>" id="mes_merch_email" class="form-control">
-                  <?php if ($error_merch_email) { ?>
-                  <div class="text-danger"><?php echo $error_merch_email; ?></div>
-                  <?php } ?>
-                </div>
-              </div>
-              <div class="form-group required">
+              <div class="form-group">
                 <label class="col-sm-2 control-label" for="mes_security_key"><span data-toggle="tooltip" title="<?php echo $help_key; ?>"><?php echo $entry_security_key; ?></span></label>
                 <div class="col-sm-10">
                   <input type="text" name="mes_security_key" value="<?php echo $mes_security_key; ?>" id="mes_security_key" class="form-control">
