@@ -399,7 +399,7 @@ function init_mes_cc() {
 				'cancel_url' => esc_url( $order->get_cancel_order_url() )
 			), $order->id );
 			if (isset($this->security_key)) {
-				$tran_key = md5('EtLwsVwzcecgpHqkrNjhXPVyvUnEYHdn'.$this->security_key.$order->order_total);
+				$tran_key = md5($this->profile_key.$this->security_key.$order->order_total);
 				$args['transaction_key'] = $tran_key;
 			};
 			return $args;
