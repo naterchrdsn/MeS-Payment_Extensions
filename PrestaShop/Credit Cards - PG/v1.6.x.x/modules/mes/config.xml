@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>mes</name>
+    <displayName><![CDATA[Merchant e-Solutions]]></displayName>
+    <version><![CDATA[2.0]]></version>
+    <description><![CDATA[Accept payments through the Merchant e-Solutions Payment Gateway or PayHere APIs]]></description>
+    <author><![CDATA[Merchant e-Solutions]]></author>
+    <tab><![CDATA[payments_gateways]]></tab>
+    <confirmUninstall><![CDATA[Are you sure you want to remove the MeS module?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>1</need_instance>
+    <limited_countries>us</limited_countries>
+</module>
