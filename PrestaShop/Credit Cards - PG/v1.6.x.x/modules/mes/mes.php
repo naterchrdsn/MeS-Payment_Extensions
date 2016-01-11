@@ -298,7 +298,7 @@ class mes extends PaymentModule
 				'mes_use_merch_receipt' => 'Y',
 				'mes_cardholder_street_address' => $invoice->address1,
 				'mes_cardholder_zip' => $invoice->postcode,
-				'mes_echo_redirurl' => $this->context->link->getModuleLink('mes', 'validation'),
+				'mes_echo_redirurl' => urlencode(Tools::getShopDomain(true).__PS_BASE_URI__),
 				'mes_return_url' => Tools::getShopDomain(true).__PS_BASE_URI__.'modules/mes/mes_cc_redirect.php',
 				'mes_cancel_url' => $this->context->link->getPageLink('order.php',''),
 			);

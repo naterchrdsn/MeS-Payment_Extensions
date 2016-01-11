@@ -1,7 +1,7 @@
 <?php
 if ($_POST && isset($_POST['tran_id']) && $_POST['resp_text']) {
 ?>
-<form action='<?php print $_POST['eresp_redirurl']; ?>' method='post' name='frm'>
+<form action='<?php print urldecode($_POST['eresp_redirurl']).'index.php?fc=module&module=mes&controller=validation'; ?>' method='post' name='frm'>
 <?php
 foreach ($_POST as $a => $b) {
 echo "<input type='hidden' name='".htmlentities($a)."' value='".htmlentities($b)."'>";
