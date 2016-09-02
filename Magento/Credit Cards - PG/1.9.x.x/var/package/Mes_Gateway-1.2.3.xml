@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+    <name>Mes_Gateway</name>
+    <version>1.2.3</version>
+    <stability>stable</stability>
+    <license uri="http://opensource.org/licenses/apachepl.php">Apache Software License</license>
+    <channel>community</channel>
+    <extends/>
+    <summary>The Official Free Processing plug-in for the MeS Payment Gateway.</summary>
+    <description>This plug-in will allow credit card acceptance through the Merchant e-Solutions Payment Gateway.</description>
+    <notes>Fixed loading of tokenization library.&#xD;
+Added tokenization to admin order creation.</notes>
+    <authors><author><name>mesolutions</name><user>mesolutions</user><email>mes_certification@merchante-solutions.com</email></author></authors>
+    <date>2014-02-26</date>
+    <time>19:54:32</time>
+    <contents><target name="magecommunity"><dir name="Mes"><dir name="Gateway"><dir name="Block"><file name="Form.php" hash="03e1cab2da92ca33015ec1f273f0b347"/></dir><dir name="Helper"><file name="Data.php" hash="1a95e5fc5e9fdbd269d9252c1cc943f9"/></dir><dir name="Model"><file name="Paymentmodel.php" hash="1452674749cd6fda3586c09b30fce4be"/><file name="Session.php" hash="f6ce82220c951243ab7c65f6394c9027"/><dir name="Source"><file name="Cardtypes.php" hash="c86be0ea657658fc49fbda3639a663f0"/><file name="Currencies.php" hash="cde6d43fdd21b96c570fc082c2acaadb"/><file name="Transactiontype.php" hash="de93477fe1e51031399ece2a7fcf45ea"/></dir></dir><dir name="etc"><file name="config.xml" hash="7a39db938f45f75c41bf392604cd1f51"/><file name="system.xml" hash="4e1a96a603b3ce3420bbf8e03b5b9283"/></dir></dir></dir></target><target name="mage"><dir name="app"><dir name="etc"><dir name="modules"><file name="Mes_Gateway.xml" hash="3c66636dd94beda5bfb984565b52aca1"/></dir></dir></dir><dir name="js"><dir name="mes"><file name="BCLD5.js" hash="f8652cceda779be5c9b273f42099d93d"/><file name="admin-checkout.js" hash="4063fea37053f0437a3dc870538b67be"/><file name="mes-1.0-min.js" hash="d91042c43a28462ed499dd481cf74852"/></dir></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="mes"><file name="cc.phtml" hash="a4f231bb694ceaadf6170eb548308100"/></dir></dir><dir name="layout"><file name="mes.xml" hash="f5ef2d1fdec027166d500359c858207c"/></dir></dir></dir></dir><dir name="adminhtml"><dir name="default"><dir name="default"><dir name="template"><dir name="mes"><file name="cc.phtml" hash="7ad692377830ab69f9976145555fc8c7"/></dir></dir><dir name="layout"><file name="mes.xml" hash="3c230d27f02d256c1ddb64e15fc6c7c8"/></dir></dir></dir></dir></target></contents>
+    <compatible/>
+    <dependencies><required><php><min>5.2.0</min><max>6.0.0</max></php></required></dependencies>
+</package>

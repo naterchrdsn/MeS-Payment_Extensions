@@ -1,0 +1,27 @@
+#
+#
+# @author	Merchant e-Solutions <nrichardson@merchante-solutions.com>
+# @copyright Copyright (c) 2015 Merchant e-Solutions. All rights reserved.
+
+XLite\Model\Payment\Method:
+  - service_name: Merchant e-Solutions
+    class: Module\MeS\MeS\Model\Payment\Processor\MeS
+    type: C
+    orderby: -10000
+    countries: [US]
+    translations:
+      - code: en
+        name: Merchant e-Solutions
+    settings:
+      - name: profileKey
+      - name: profileId
+      - name: paymentMode
+        value: PH
+        value: PG
+      - name: testMode
+        value: live
+        value: sandbox
+      - name: transactionType
+        value: sale
+        value: preAuth
+      - name: securityKey
